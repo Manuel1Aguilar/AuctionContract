@@ -1,4 +1,4 @@
-import { ethers, waffle } from "hardhat";
+import { ethers, waffle, network } from "hardhat";
 import { expect } from "chai";
 import { Auction } from "../typechain";
 import { TransactionResponse } from "@ethersproject/abstract-provider";
@@ -18,7 +18,6 @@ describe("Auction: Succesful auctioning - default", function () {
   let firstAuctioner: SignerWithAddress;
   let secondAuctioner: SignerWithAddress;
   let tx: TransactionResponse;
-  let withdrawTx: TransactionResponse;
   const amount = ethers.utils.parseEther("1");
   const higherAmount = ethers.utils.parseEther("1.5");
   before(async () => {
@@ -36,7 +35,7 @@ describe("Auction: Succesful auctioning - default", function () {
     it("THEN an event is emitted", async () => {
       return expect(tx).to.emit(auction, "Won").withArgs(firstAuctioner.address, amount, tx.blockNumber);
     });
-    it("THEN the first auctioner is the winner", async () => {
+    it("THEN the auctioner is the winner", async () => {
       const winner = await auction.winner();
       return expect(winner).to.equal(firstAuctioner.address);
     });
@@ -52,25 +51,36 @@ describe("Auction: Succesful auctioning - default", function () {
     it("THEN an event is emitted", async () => {
       return expect(tx).to.emit(auction, "Won").withArgs(secondAuctioner.address, higherAmount, tx.blockNumber);
     });
-    it("THEN the second auctioner is the winner", async () => {
+    it("THEN the highest bidder is the winner", async () => {
       const winner = await auction.winner();
       return expect(winner).to.equal(secondAuctioner.address);
     });
-    it("THEN the first auctioner has withdrawable balance", async () => {
+    it("THEN the old winner has withdrawable balance", async () => {
       const withdrawableBalance = await auction.withdrawableAmounts(firstAuctioner.address);
       return expect(withdrawableBalance).to.equal(amount);
     });
   });
-  describe("WHEN a user loses the winning status", function () {
+  describe("WHEN a user withdraws their balance", function () {
     before(async function () {
-      withdrawTx = await auction.withdraw();
+      tx = await auction.withdraw();
     });
     it("THEN a WITHDRAW event is emitted", async () => {
-      return expect(withdrawTx).to.emit(auction, "Withdrawn").withArgs(firstAuctioner.address, amount);
+      return expect(tx).to.emit(auction, "Withdrawn").withArgs(firstAuctioner.address, amount);
     });
-    it("THEN the first auctioner's withdrawable balance is back to 0", async () => {
+    it("THEN the withdrawer's withdrawable balance is back to 0", async () => {
       const withdrawableBalance = await auction.withdrawableAmounts(firstAuctioner.address);
       return expect(withdrawableBalance).to.equal(0);
+    });
+  });
+  
+  describe("WHEN the auction's finished and a user claims", function () {
+    before(async function () {
+      //pass enough blocks so that the auction is finished
+      await network.provider.send("hardhat_mine", ["0x100"]);
+      tx = await auction.connect(secondAuctioner).claim();
+    });
+    it("THEN a CLAIM event is emitted", async () => {
+      return expect(tx).to.emit(auction, "Claimed").withArgs(secondAuctioner.address);
     });
   });
 }); 

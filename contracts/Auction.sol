@@ -67,7 +67,4 @@ contract Auction {
 
         emit Claimed(msg.sender);
     }
-
-
-    
 }

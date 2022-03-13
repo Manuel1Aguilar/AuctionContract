@@ -62,7 +62,7 @@ describe("Auction: failing paths", function () {
 
   describe("WHEN a user auctions after the auction has finished", async () => {
     before(async () => {
-      //pass enough blocks so the auction is finished
+      //pass enough blocks so that the auction is finished
       await network.provider.send("hardhat_mine", ["0x100"]);
     });
     it("THEN the transaction fails", async () => {
