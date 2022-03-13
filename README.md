@@ -1,6 +1,6 @@
-# Project Title
+# Auction
 
-This project contains the boilerplate that must be used when dealing with Solidity based Smart Contracts developmen projects.
+This project is a non-production smart contract with auction functionality. It needs a hardhat version that's above 2.9.0 because it uses the "hardhat_mine" function.
 
 ## Getting Started
 
@@ -8,7 +8,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
+Use proper node version
 
 ```bash
 # Install nvm
@@ -18,9 +18,9 @@ nvm use
 ```
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
+Get a development environment running
 
-Say what the step will be
+Install the project's dependencies
 
 ```bash
 # Install the dependencies
