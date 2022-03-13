@@ -35,7 +35,7 @@ describe("Auction: failing paths", function () {
       value: lowerAmount,
     };
     it("THEN the transaction fails", async () => {
-      return expect(auction.connect(secondBidder).auction(losingAuctionData)).to.revertedWith("Auction not won");
+      return expect(auction.connect(secondBidder).auction(losingAuctionData)).to.revertedWith("Auction: Losing bid");
     });
     it("THEN the first auctioner is still the winner", async () => {
       const winner = await auction.winner();
@@ -45,13 +45,13 @@ describe("Auction: failing paths", function () {
 
   describe("WHEN a user tries to withdraw and has no balance", function () {
     it("THEN the transaction fails", async () => {
-      return expect(auction.withdraw()).to.revertedWith("Sender does not have a withdrawable amount");
+      return expect(auction.withdraw()).to.revertedWith("Auction: Nothing to withdraw");
     });
   });
 
   describe("WHEN a user tries to claim and the auction is not finished", function () {
     it("THEN the transaction fails", async () => {
-      return expect(auction.claim()).to.revertedWith("The auction's not closed yet");
+      return expect(auction.claim()).to.revertedWith("Auction: Auction still open");
     });
   });
 
@@ -64,12 +64,12 @@ describe("Auction: failing paths", function () {
       await network.provider.send("hardhat_mine", ["0x100"]);
     });
     it("THEN the transaction fails", async () => {
-      return expect(auction.connect(secondBidder).auction(winningAuctionData)).to.revertedWith("Auction finished");
+      return expect(auction.connect(secondBidder).auction(winningAuctionData)).to.revertedWith("Auction: Auction finished");
     });
   });
   describe("WHEN a user tries to claim and is not the winner", function () {
     it("THEN the transaction fails", async () => {
-      return expect(auction.connect(secondBidder).claim()).to.revertedWith("You are not the winner");
+      return expect(auction.connect(secondBidder).claim()).to.revertedWith("Auction: Sender not the winner");
     });
   });
 }); 

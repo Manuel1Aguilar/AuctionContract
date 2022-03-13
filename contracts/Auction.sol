@@ -77,8 +77,8 @@ contract Auction {
         @notice Function that lets users bid for the nft
      */
     function auction() public payable {
-        require(msg.value > winningValue, "Auction not won");
-        require(block.number < winningBlock + blockLimit || winningBlock == 0, "Auction finished");
+        require(msg.value > winningValue, "Auction: Losing bid");
+        require(block.number < winningBlock + blockLimit || winningBlock == 0, "Auction: Auction finished");
         withdrawableAmounts[winner] = winningValue;
         winner = msg.sender;
         winningValue = msg.value;
@@ -90,11 +90,11 @@ contract Auction {
         @notice Function that lets users withdraw ther bids if they lose
      */
     function withdraw() public {
-        require(withdrawableAmounts[msg.sender] > 0, "Sender does not have a withdrawable amount");
+        require(withdrawableAmounts[msg.sender] > 0, "Auction: Nothing to withdraw");
         uint256 value = withdrawableAmounts[msg.sender];
         withdrawableAmounts[msg.sender] = 0;
         (bool success, ) = payable(msg.sender).call{ value: value }("");
-        require(success, "Transfer failed");
+        require(success, "Auction: Transfer failed");
         emit Withdrawn(msg.sender, value);
     }
 
@@ -105,8 +105,8 @@ contract Auction {
         the checks.
      */
     function claim() public {
-        require(block.number >= winningBlock + blockLimit, "The auction's not closed yet");
-        require(winner == msg.sender, "You are not the winner");
+        require(block.number >= winningBlock + blockLimit, "Auction: Auction still open");
+        require(winner == msg.sender, "Auction: Sender not the winner");
         nftContract.safeTransferFrom(address(this), winner, nftId);
 
         emit Claimed(msg.sender);
