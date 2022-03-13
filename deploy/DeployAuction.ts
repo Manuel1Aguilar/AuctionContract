@@ -6,12 +6,12 @@ const deployFunc: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { deployer } = await hre.getNamedAccounts();
   //Fake nft deploy for testing purposes
   const fakeNft = await deploy("FakeNft", {
-    from: deployer
+    from: deployer,
   });
 
   await deploy("Auction", {
-    from: deployer, 
-    args: [fakeNft.address, 999, 50 ],
+    from: deployer,
+    args: [fakeNft.address, 999, 50],
   });
 };
 export default deployFunc;

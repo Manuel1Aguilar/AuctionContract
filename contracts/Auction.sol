@@ -11,7 +11,6 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
  */
 
 contract Auction {
-    
     /**
         @notice Auctioned NFT contract's address
      */
@@ -31,7 +30,7 @@ contract Auction {
     /**
         @notice Tracks the withdrawable amounts of the addresses that have been outbid
      */
-    mapping (address => uint256) public withdrawableAmounts;
+    mapping(address => uint256) public withdrawableAmounts;
     /**
         @notice Limit of blocks that can pass between bids for the auction to still
         be considered open
@@ -64,7 +63,11 @@ contract Auction {
     /**
         @notice Set the NFT's contract address and Id as well as the blockLimit
      */
-    constructor (address _nftAddress, uint256 _nftId, uint256 _blockLimit) {
+    constructor(
+        address _nftAddress,
+        uint256 _nftId,
+        uint256 _blockLimit
+    ) {
         nftContract = IERC721(_nftAddress);
         nftId = _nftId;
         blockLimit = _blockLimit;

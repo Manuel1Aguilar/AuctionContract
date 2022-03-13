@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-
 /**
     @author Manuel Aguilar
     @title FakeNft
@@ -9,7 +8,6 @@ pragma solidity ^0.8.9;
  */
 
 contract FakeNft {
-    
     /** 
         @notice Function that's called and does nothing.
     */

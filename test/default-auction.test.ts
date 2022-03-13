@@ -13,8 +13,8 @@ declare module "mocha" {
   }
 }
 
-describe("Auction: Succesful auctioning - default", function () {   
-  let auction: Auction; 
+describe("Auction: Succesful auctioning - default", function () {
+  let auction: Auction;
   let firstAuctioner: SignerWithAddress;
   let secondAuctioner: SignerWithAddress;
   let tx: TransactionResponse;
@@ -45,7 +45,7 @@ describe("Auction: Succesful auctioning - default", function () {
       const secondAuctionData = {
         value: higherAmount,
       };
-      
+
       tx = await auction.connect(secondAuctioner).auction(secondAuctionData);
     });
     it("THEN an event is emitted", async () => {
@@ -72,7 +72,7 @@ describe("Auction: Succesful auctioning - default", function () {
       return expect(withdrawableBalance).to.equal(0);
     });
   });
-  
+
   describe("WHEN the auction's finished and a user claims", function () {
     before(async function () {
       //pass enough blocks so that the auction is finished
@@ -83,4 +83,4 @@ describe("Auction: Succesful auctioning - default", function () {
       return expect(tx).to.emit(auction, "Claimed").withArgs(secondAuctioner.address);
     });
   });
-}); 
+});

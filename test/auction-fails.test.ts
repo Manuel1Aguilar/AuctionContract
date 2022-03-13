@@ -16,22 +16,17 @@ declare module "mocha" {
 
 describe("Auction: failing paths", function () {   
   let auction: Auction; 
-  let firstAuctioner: SignerWithAddress;
-  let secondAuctioner: SignerWithAddress;
-  // let tx: TransactionResponse;
-  // let withdrawTx: TransactionResponse;
+  let firstBidder: SignerWithAddress;
+  let secondBidder: SignerWithAddress;
   const amount = ethers.utils.parseEther("1");
   const higherAmount = ethers.utils.parseEther("1.5");
   const lowerAmount = ethers.utils.parseEther("0.5");
-  const firstAuctionData = {
-    value: amount,
-  };
-  const winningAuctionData = {
-    value: higherAmount,
-  };
   before(async () => {
+    const firstAuctionData = {
+      value: amount,
+    };
     auction = await loadFixture(fixtureDeployedAuction);
-    [firstAuctioner, secondAuctioner] = await ethers.getSigners();
+    [firstBidder, secondBidder] = await ethers.getSigners();
     await auction.auction(firstAuctionData);
   });
 
@@ -40,11 +35,11 @@ describe("Auction: failing paths", function () {
       value: lowerAmount,
     };
     it("THEN the transaction fails", async () => {
-      return expect(auction.connect(secondAuctioner).auction(losingAuctionData)).to.revertedWith("Auction not won");
+      return expect(auction.connect(secondBidder).auction(losingAuctionData)).to.revertedWith("Auction not won");
     });
     it("THEN the first auctioner is still the winner", async () => {
       const winner = await auction.winner();
-      return expect(winner).to.equal(firstAuctioner.address);
+      return expect(winner).to.equal(firstBidder.address);
     });
   });
 
@@ -61,17 +56,20 @@ describe("Auction: failing paths", function () {
   });
 
   describe("WHEN a user auctions after the auction has finished", async () => {
+    const winningAuctionData = {
+      value: higherAmount,
+    };
     before(async () => {
       //pass enough blocks so that the auction is finished
       await network.provider.send("hardhat_mine", ["0x100"]);
     });
     it("THEN the transaction fails", async () => {
-      return expect(auction.connect(secondAuctioner).auction(winningAuctionData)).to.revertedWith("Auction finished");
+      return expect(auction.connect(secondBidder).auction(winningAuctionData)).to.revertedWith("Auction finished");
     });
   });
   describe("WHEN a user tries to claim and is not the winner", function () {
     it("THEN the transaction fails", async () => {
-      return expect(auction.connect(secondAuctioner).claim()).to.revertedWith("You are not the winner");
+      return expect(auction.connect(secondBidder).claim()).to.revertedWith("You are not the winner");
     });
   });
 }); 
